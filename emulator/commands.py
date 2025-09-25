@@ -14,7 +14,7 @@ def cmd_ls(shell, vfs,  args):
     for t in targets:
         try:
             node = vfs.resolve_path(t)
-        except Exception:
+        except FileNotFoundError:
             shell.show_output(f"ls: cannot access '{t}': No such file or directory")
             continue
         if node["type"] == "dir":
@@ -28,24 +28,15 @@ def cmd_ls(shell, vfs,  args):
 
 def cmd_cd(shell, vfs, args):
     if len(args) == 1:
-        if args[0] == '/':
-            vfs.vfs_curr = vfs.vfs_root
-            vfs.curr = vfs.root
-            return
-        elif args[0][0] == '/':
-            try:
-                curr = f'{vfs.root}/{args[0][1:]}'
-                vfs.vfs_curr = vfs.build_vfs(curr)
-                vfs.curr = curr
-            except FileNotFoundError:
-                shell.show_output(f"cd: {args[0]}: No such file or directory")
-        else:
-            try:
-                curr = f'{vfs.curr}/{args[0]}'
-                vfs.vfs_curr = vfs.build_vfs(curr)
-                vfs.curr = curr
-            except FileNotFoundError:
-                shell.show_output(f"cd: {args[0]}: No such file or directory")
+        try:
+            node = vfs.resolve_path(args[0])
+            if node["type"] != "dir":
+                shell.show_output(f"cd: {args[0]}: Not a directory")
+                return
+
+            vfs.curr = node["real_path"]
+        except FileNotFoundError:
+            shell.show_output(f"cd: {args[0]}: No such file or directory")
     else:
         shell.show_output("cd: too many arguments")
 
@@ -104,7 +95,7 @@ def cmd_pwd(shell, vfs, args):
     if vfs.curr == vfs.root:
         path = "/"
     else:
-        path = vfs.curr.replace(vfs.root, "")
+        path = vfs.curr.replace(vfs.root, "").replace("\\", "/")
     shell.show_output(path)
 
 
