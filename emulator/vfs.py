@@ -9,7 +9,7 @@ class VFS:
 
     def build_node(self, path):
         if os.path.isdir(path):
-            node = {"type": "dir", "name": os.path.basename(path), "children": {}}
+            node = {"type": "dir", "curr": False, "children": {}}
             try:
                 names = sorted(os.listdir(path))
             except PermissionError:
@@ -18,7 +18,7 @@ class VFS:
                 node["children"][name] = self.build_node(os.path.join(path, name))
             return node
         else:
-            return {"type": "file", "name": os.path.basename(path)}
+            return {"type": "file", "curr": False}
 
     def build_vfs(self, root_path):
         root_path = os.path.abspath(root_path)
