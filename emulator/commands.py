@@ -6,7 +6,7 @@ def cmd_exit(shell, vfs, args):
         shell.show_output("exit: не принимает аргументы")
         return
     shell.show_output("Выход...")
-    shell.after(200, shell.destroy)
+    shell.after(300, shell.destroy)
 
 
 # Показ содержимого каталога
@@ -189,7 +189,6 @@ def cmd_mv(shell, vfs, args):
     # Обновляем пути рекурсивно
     update_paths_recursive(source_node, new_target_path)
     shell.show_output(f"Moved {args[0]} to {args[1]}")
-    print(source_node)
 
 
 # Список доступных команд по умолчанию

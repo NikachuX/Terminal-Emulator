@@ -3,7 +3,8 @@ ls
 
 mv text.txt file.txt
 ls
-
+touch new_file.txt
+ls
 mv /home/text3.txt file.txt
 ls home
 tac file.txt

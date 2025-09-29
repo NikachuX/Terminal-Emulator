@@ -8,3 +8,4 @@ cd files/projects
 pwd
 cd /
 ls
+exit
