@@ -52,7 +52,7 @@ def cmd_tac(shell, vfs, args):
     try:
         node = vfs.resolve_path(args[0])
     except FileNotFoundError:
-        shell.show_output(f"tail: cannot open {args[0]} for reading: No such file or directory")
+        shell.show_output(f"tac: cannot open {args[0]} for reading: No such file or directory")
         return
 
     path = node["real_path"]
@@ -63,7 +63,7 @@ def cmd_tac(shell, vfs, args):
             for line in reversed(lines):
                 shell.show_output(line)
     else:
-        shell.show_output(f"tail: error reading {args[0]}: Is a directory")
+        shell.show_output(f"tac: error reading {args[0]}: Is a directory")
 
 
 # Вывод последних N строк файла
@@ -177,16 +177,19 @@ def cmd_mv(shell, vfs, args):
             return
 
     # обновляем пути рекурсивно для директорий
-    def update_paths_recursive(node, change_path):
-        new_path = os.path.join(change_path, filename)
+    def update_paths_recursive(node, change_path, name="", where=""):
+        new_path = str(os.path.join(change_path, filename))
+        if where == "recurs":
+            new_path = os.path.join(new_path, name)
         node["path"] = new_path
         if node["type"] == "dir":
             for child_name, child_node in node["children"].items():
-                update_paths_recursive(child_node, node["path"])
+                update_paths_recursive(child_node, change_path, child_name, "recurs")
 
     # Обновляем пути рекурсивно
     update_paths_recursive(source_node, new_target_path)
     shell.show_output(f"Moved {args[0]} to {args[1]}")
+    print(source_node)
 
 
 # Список доступных команд по умолчанию
